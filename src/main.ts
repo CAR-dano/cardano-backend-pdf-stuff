@@ -53,6 +53,21 @@ async function bootstrap() {
     }),
   );
 
+  const clientUrl = configService.get<string>('CLIENT_BASE_URL');
+  if (clientUrl) {
+    logger.log(`Enabling CORS for origin: ${clientUrl}`);
+    app.enableCors({
+      origin: clientUrl,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      credentials: true,
+    });
+  } else {
+    logger.warn(
+      'CLIENT_BASE_URL not set in .env, enabling CORS for all origins (development only)',
+    );
+    app.enableCors();
+  }
+
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Cardano PDF API') // Cardano PDF API Title
     .setDescription('API documentation for the Cardano PDF project.') // Description
